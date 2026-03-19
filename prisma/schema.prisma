@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Transaction {
+  id          Int      @id @default(autoincrement())
+  category    String   // Ex: 'Software', 'Hardware', 'Services'
+  amount      Decimal  @db.Decimal(10, 2)
+  status      String   // Ex: 'completed', 'pending'
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([createdAt]) // Essencial para o filtro de data ser performático
+  @@map("transactions")
+}
+
+// Tabela de Auditoria para demonstrar o uso de TRIGGER
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  entityId  Int
+  action    String
+  oldValue  String?  @db.Text
+  newValue  String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
