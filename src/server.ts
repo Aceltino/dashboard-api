@@ -20,17 +20,28 @@ const swaggerDefinition = {
   servers: [{ url: "http://localhost:" + (process.env.PORT || 3333) }],
 };
 
+import fs from "fs";
+import path from "path";
+
 const swaggerOptions = {
   swaggerDefinition,
-  apis: [
-    "src/infrastructure/http/routes/*.ts",
-    "src/infrastructure/http/controllers/*.ts",
-  ],
+  apis: [],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Load swagger document from file
+const swaggerDocumentPath = path.join(process.cwd(), "swagger.json");
+const swaggerDocument = JSON.parse(fs.readFileSync(swaggerDocumentPath, "utf8"));
+
+// Merge with the static swagger document
+const finalSwaggerSpec = {
+  ...swaggerSpec,
+  ...swaggerDocument,
+  servers: [{ url: "http://localhost:" + (process.env.PORT || 3333) }],
+};
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(finalSwaggerSpec));
 
 app.use(routes);
 

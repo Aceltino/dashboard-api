@@ -81,7 +81,7 @@ const asyncHandler = (
     req: ExpressRequest,
     res: ExpressResponse,
     next: ExpressNext,
-  ) => Promise<void>,
+  ) => Promise<unknown>,
 ) => {
   return (req: ExpressRequest, res: ExpressResponse, next: ExpressNext) => {
     fn(req, res, next).catch(next);

@@ -2,7 +2,6 @@
   "name": "dashboard-api",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "vitest run --globals --environment node",
@@ -15,8 +14,8 @@
     "generate": "pnpm prisma generate",
     "start": "node dist/main.js",
     "lint": "eslint . --ext .ts --fix",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down"
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
   },
   "keywords": [],
   "author": "",
