@@ -1,35 +1,28 @@
 import { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../shared/errors/AppError';
+import { ApiResponse } from '../http/ApiResponse';
 
 export function errorMiddleware(
-    error: Error & Partial<AppError>,
-    req: Request,
-    res: Response,
-    next: NextFunction
+  error: Error & Partial<AppError>,
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
+  if (error instanceof AppError) {
+    return res.status(error.statusCode).json(
+      ApiResponse.error(error.message, error.statusCode, error.code, error.details)
+    );
+  }
 
-    // Se o erro for uma instância do nosso AppError (erro previsto)
-    if (error instanceof AppError) {
-        return res.status(error.statusCode).json({
-            success: false,
-            message: error.message,
-        });
-    }
+  if (error.name === 'PrismaClientKnownRequestError') {
+    return res.status(400).json(
+      ApiResponse.error('Database conflict error', 400, 'database_conflict', {
+        meta: error.code,
+      })
+    );
+  }
 
-    // Se for um erro do Prisma (ex: violação de constraint)
-    if (error.name === 'PrismaClientKnownRequestError') {
-        return res.status(400).json({
-            success: false,
-            message: 'Database conflict error',
-            code: error.statusCode
-        });
-    }
+  console.error(`[Internal Error]: ${error.stack}`);
 
-    // Erro inesperado (500) - Logar para debug interno
-    console.error(`[Internal Error]: ${error.stack}`);
-
-    return res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-    });
+  return res.status(500).json(ApiResponse.error('Internal server error', 500, 'internal_error'));
 }

@@ -1,4 +1,5 @@
 import { prisma } from "../../infrastructure/database/prisma";
+import { AppError } from "../../shared/errors/AppError";
 
 export type ChartType = 'pie' | 'line' | 'bar';
 
@@ -25,15 +26,22 @@ export interface DashboardResult {
 
 export class GetDashboardDataUseCase {
   async execute(filter: DashboardFilter): Promise<DashboardResult> {
-    const items = await prisma.transaction.findMany({
-      where: {
-        createdAt: {
-          gte: new Date(filter.startDate),
-          lte: new Date(filter.endDate),
+    let items;
+    try {
+      items = await prisma.transaction.findMany({
+        where: {
+          createdAt: {
+            gte: new Date(filter.startDate),
+            lte: new Date(filter.endDate),
+          },
         },
-      },
-      orderBy: { createdAt: 'asc' },
-    });
+        orderBy: { createdAt: 'asc' },
+      });
+    } catch (err) {
+      throw new AppError('Database connection timeout', 503, 'db_unavailable', {
+        originalError: err,
+      });
+    }
 
     if (filter.type === 'line') {
       const grouped = items.reduce<Record<string, number>>((acc, item) => {

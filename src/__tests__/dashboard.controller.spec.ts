@@ -44,9 +44,12 @@ describe('DashboardController', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(jsonResponse).toMatchObject({
       success: true,
-      type: 'pie',
-      period: { from: '2026-01-01', to: '2026-01-31' },
-      data: expect.any(Array),
+      message: 'Dashboard data fetched successfully',
+      data: {
+        type: 'pie',
+        period: { from: '2026-01-01', to: '2026-01-31' },
+        data: expect.any(Array),
+      },
     });
   });
 });

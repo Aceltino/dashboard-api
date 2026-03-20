@@ -1,10 +1,10 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "mysql"
+  url      = "mysql://root:root@localhost:3306/dashboard_db"
 }
 
 model Transaction {

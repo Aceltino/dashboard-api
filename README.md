@@ -81,7 +81,91 @@ pnpm docker:up
 pnpm docker:down
 ```
 
-## 📌 Endpoints previstas do desafio
+## � Endpoints disponíveis
+
+### GET /healthz
+
+- resposta: `200`
+- corpo: `{ "success": true, "message": "OK" }`
+
+### GET /dashboard
+
+Query params:
+- `type` (required): `pie | line | bar`
+- `from` (required): `YYYY-MM-DD`
+- `to` (required): `YYYY-MM-DD`
+
+Exemplo:
+
+```http
+GET /dashboard?type=pie&from=2026-01-01&to=2026-01-31
+```
+
+Formato de resposta 200:
+
+```json
+{
+  "success": true,
+  "message": "Dashboard data fetched successfully",
+  "data": {
+    "type": "pie",
+    "period": {
+      "from": "2026-01-01",
+      "to": "2026-01-31"
+    },
+    "data": [
+      { "label": "Software", "value": 100.0 },
+      { "label": "Hardware", "value": 200.0 }
+    ]
+  }
+}
+```
+
+Erros:
+- 400: validação inválida (`validation_error`)
+- 500: erro interno (`internal_error`)
+
+### GET /api-docs
+
+- URL de interface Swagger UI para documentação interativa.
+
+## 🧪 Testes
+
+Executar:
+
+```bash
+pnpm test
+```
+
+Testes implementados:
+- `src/__tests__/dashboard.controller.spec.ts` (unit)
+- `src/__tests__/dashboard.integration.spec.ts` (integração, DB isolado via mock)
+
+## ✅ Estado atual
+
+- validação com Zod: `src/shared/validators/dashboard.validator.ts`
+- middleware de erro com retorno padronizado: `src/shared/middlewares/errorMiddleware.ts`
+- modelo de resposta padrão: `src/shared/http/ApiResponse.ts`
+- endpoint de saúde de serviço: `GET /healthz`
+- documentaçãoOpenAPI: `GET /api-docs`
+- `AppError` customizado de negócios
+- integração via supertest + mocks
+
+---
+
+## 📦 Scripts (package.json)
+
+- `dev`: `ts-node-dev --respawn --transpile-only src/main.ts`
+- `build`: `tsc`
+- `start`: `node dist/main.js`
+- `test`: `vitest run --globals --environment node`
+- `lint`: `eslint . --ext .ts --fix`
+- `docker:up`: `docker-compose up -d`
+- `docker:down`: `docker-compose down`
+
+## 📄 Licença
+
+ISC
 
 A API deve oferecer rota dinâmica para relatório de dashboard com filtro de data e tipo de gráfico.
 
