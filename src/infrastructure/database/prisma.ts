@@ -1,6 +1,24 @@
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+import mariadb from 'mariadb';
 
-// Garantir que temos apenas uma instância do Prisma Client
-export const prisma = new PrismaClient({
-  log: ['query', 'error', 'warn'], 
-});
+// O segredo: Trocar 'mysql://' por 'mariadb://' apenas para o driver nativo
+const connectionString = (process.env.DATABASE_URL as string).replace('mysql://', 'mariadb://');
+
+// 1. Cria o pool de conexões usando a string corrigida
+const pool = mariadb.createPool(connectionString);
+
+// 2. Cria o adaptador oficial
+const adapter = new PrismaMariaDb(pool);
+
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
+
+export const prisma =
+  globalForPrisma.prisma ||
+  new PrismaClient({
+    adapter,
+    log: ['query', 'error', 'warn'],
+  });
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
