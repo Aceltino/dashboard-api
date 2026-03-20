@@ -5,12 +5,16 @@
     "version": "1.0.0",
     "description": "API RESTful dinâmica para dashboards"
   },
-  "servers": [
-    {
-      "url": "http://localhost:3000",
-      "description": "Development server"
-    }
-  ],
+"servers": [
+  {
+    "url": "https://dashboard-api-xkxf.onrender.com",
+    "description": "Servidor de Produção (Render)"
+  },
+  {
+    "url": "http://localhost:10000",
+    "description": "Servidor Local"
+  }
+],
   "paths": {
     "/healthz": {
       "get": {
