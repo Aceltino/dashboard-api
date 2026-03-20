@@ -13,7 +13,7 @@
     "migrate:dev": "pnpm prisma migrate dev --name init",
     "migrate:deploy": "pnpm prisma migrate deploy",
     "generate": "pnpm prisma generate",
-    "lint": "eslint . --ext .ts --fix",
+    "lint": "eslint \"{src,prisma}/**/*.ts\" --fix",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down"
   },

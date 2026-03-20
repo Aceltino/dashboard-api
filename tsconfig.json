@@ -6,19 +6,13 @@
     "rootDir": ".",
     "outDir": "dist",
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "noImplicitAny": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "@prisma/adapter-mysql": ["node_modules/@prisma/adapter-mysql"],
       "@prisma/client": ["node_modules/@prisma/client"]
-    },
-    "typeRoots": ["./node_modules/@types", "./src/@types"]
+    }
   },
   "include": ["src/**/*.ts", "prisma/**/*.ts", "swagger.json"],
-  "exclude": ["node_modules", "dist", "src/**/__tests__/**"]
+  "exclude": ["node_modules", "dist"]
 }

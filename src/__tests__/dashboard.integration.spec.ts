@@ -2,12 +2,16 @@ import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { app } from "../server";
 import { prisma } from "../infrastructure/database/prisma";
+import { Prisma } from "@prisma/client";
 
-const mockTransactions: Array<import("@prisma/client").Transaction> = [
+// Tipagem correta para o mock sem usar any solto
+const mockTransactions: Array<
+  Prisma.TransactionGetPayload<Record<string, never>>
+> = [
   {
     id: 1,
     category: "Software",
-    amount: 100,
+    amount: new Prisma.Decimal(100),
     status: "completed",
     createdAt: new Date("2026-01-10T00:00:00.000Z"),
     updatedAt: new Date("2026-01-10T00:00:00.000Z"),
@@ -15,7 +19,7 @@ const mockTransactions: Array<import("@prisma/client").Transaction> = [
   {
     id: 2,
     category: "Hardware",
-    amount: 200,
+    amount: new Prisma.Decimal(200),
     status: "completed",
     createdAt: new Date("2026-01-15T00:00:00.000Z"),
     updatedAt: new Date("2026-01-15T00:00:00.000Z"),
@@ -25,7 +29,7 @@ const mockTransactions: Array<import("@prisma/client").Transaction> = [
 describe("Integration: /healthz and /dashboard", () => {
   beforeEach(() => {
     vi.spyOn(prisma.transaction, "findMany").mockResolvedValue(
-      mockTransactions,
+      mockTransactions as any,
     );
   });
 

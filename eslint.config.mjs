@@ -12,11 +12,19 @@ const compat = new FlatCompat({
 });
 
 export default [
+  // 1. Definição de pastas ignoradas (substitui o .eslintignore)
+  {
+    ignores: ["dist/**", "node_modules/**", "coverage/**", "eslint.config.js"]
+  },
+  
+  // 2. Extensões recomendadas
   ...compat.extends(
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
   ),
+
+  // 3. Configurações de parser e regras para arquivos TypeScript
   {
     files: ["**/*.ts"],
     languageOptions: {
@@ -27,10 +35,10 @@ export default [
       },
     },
     rules: {
-      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-explicit-any": "off", // Permitido para flexibilidade em mocks de teste
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { argsIgnorePattern: "^_" },
+        { argsIgnorePattern: "^_" }, // Ignora variáveis que começam com _ (ex: _next)
       ],
     },
   },

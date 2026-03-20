@@ -32,7 +32,9 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 // Load swagger document from file
 const swaggerDocumentPath = path.join(process.cwd(), "swagger.json");
-const swaggerDocument = JSON.parse(fs.readFileSync(swaggerDocumentPath, "utf8"));
+const swaggerDocument = JSON.parse(
+  fs.readFileSync(swaggerDocumentPath, "utf8"),
+);
 
 // Merge with the static swagger document
 const finalSwaggerSpec = {
