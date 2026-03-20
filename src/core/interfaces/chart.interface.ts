@@ -1,4 +1,8 @@
-import { ChartType, DashboardChartEntry, DashboardLineEntry } from '../../application/use-cases/get-dashboard-data.use-case';
+import {
+  ChartType,
+  DashboardChartEntry,
+  DashboardLineEntry,
+} from "../../application/use-cases/get-dashboard-data.use-case";
 
 export interface DashboardDataResponse {
   type: ChartType;

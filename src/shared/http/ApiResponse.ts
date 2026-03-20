@@ -1,10 +1,19 @@
 export class ApiResponse {
-  static success(data: any, message = 'Success', meta?: Record<string, any>) {
+  static success<T>(
+    data: T,
+    message = "Success",
+    meta?: Record<string, unknown>,
+  ) {
     const base = {
       success: true,
       message,
       data,
-    } as any;
+    } as {
+      success: true;
+      message: string;
+      data: T;
+      meta?: Record<string, unknown>;
+    };
 
     if (meta) {
       base.meta = meta;
@@ -13,8 +22,21 @@ export class ApiResponse {
     return base;
   }
 
-  static error(message = 'Internal Server Error', statusCode = 500, code = 'internal_error', details?: unknown) {
-    const result: any = {
+  static error(
+    message = "Internal Server Error",
+    statusCode = 500,
+    code = "internal_error",
+    details?: unknown,
+  ) {
+    const result: {
+      success: false;
+      error: {
+        message: string;
+        code: string;
+        statusCode: number;
+        details?: unknown;
+      };
+    } = {
       success: false,
       error: {
         message,

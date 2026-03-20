@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import { DashboardController } from '../controllers/dashboard.controller';
+import { Router } from "express";
+import { DashboardController } from "../controllers/dashboard.controller";
 
 const router = Router();
 const dashboardController = new DashboardController();
@@ -22,8 +22,8 @@ const dashboardController = new DashboardController();
  *                 message:
  *                   type: string
  */
-router.get('/healthz', (req, res) => {
-  return res.status(200).json({ success: true, message: 'OK' });
+router.get("/healthz", (req, res) => {
+  return res.status(200).json({ success: true, message: "OK" });
 });
 
 /**
@@ -72,6 +72,25 @@ router.get('/healthz', (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.get('/dashboard', (req, res) => dashboardController.handle(req, res));
+type ExpressRequest = import("express").Request;
+type ExpressResponse = import("express").Response;
+type ExpressNext = import("express").NextFunction;
+
+const asyncHandler = (
+  fn: (
+    req: ExpressRequest,
+    res: ExpressResponse,
+    next: ExpressNext,
+  ) => Promise<void>,
+) => {
+  return (req: ExpressRequest, res: ExpressResponse, next: ExpressNext) => {
+    fn(req, res, next).catch(next);
+  };
+};
+
+router.get(
+  "/dashboard",
+  asyncHandler((req, res) => dashboardController.handle(req, res)),
+);
 
 export default router;

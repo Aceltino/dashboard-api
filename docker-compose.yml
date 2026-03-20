@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dashboard_api_app
+    restart: always
+    env_file: .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql-db
+    command: ["sh", "-c", "pnpm prisma migrate deploy && pnpm start"]
+
   mysql-db:
     image: mysql:8.0
     container_name: dashboard_mysql
@@ -20,4 +33,4 @@ services:
       - "8081:8080"
 
 volumes:
-  mysql_data:
+  mysql_data:  

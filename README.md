@@ -237,6 +237,45 @@ Cobertura esperada:
 - `docker:up`: `docker-compose up -d`
 - `docker:down`: `docker-compose down`
 
-## 📄 Licença
+## � Deploy e CI/CD
+
+1. Configure as variáveis de ambiente locais a partir de `.env.example`.
+2. Certifique-se de não subir `.env` ao GitHub (já está em `.gitignore`).
+3. Pipeline configurado em `.github/workflows/ci.yml`:
+   - lint
+   - test
+   - prisma generate
+   - build
+   - (opcional) docker build/push se `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN` estiverem definidas
+
+### GitHub repository
+
+```bash
+# inicializar repositório local (se ainda não estiver)
+git init
+git add .
+git commit -m "chore: inicial commit"
+
+# conectar ao remote GitHub
+git remote add origin git@github.com:<seu-usuario>/dashboard-api.git
+
+# criar a branch principal e subir
+git branch -M main
+git push -u origin main
+```
+
+### Como criar release sem segredos no código
+
+- Evite hardcode de credenciais no código fonte.
+- use `.env` local ou secrets do GitHub Actions.
+- mantenha `DATABASE_URL` só em runtime (env var), nunca com valor real em código.
+
+### Docker em produção
+
+- `docker-compose up -d` roda MySQL + Adminer + API.
+- `docker-compose down` abaixo.
+- `Dockerfile` faz build multi-stage e executa `node dist/main.js`.
+
+## �📄 Licença
 
 ISC
