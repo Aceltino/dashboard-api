@@ -8,11 +8,11 @@
     "test:watch": "vitest --globals --environment node",
     "dev": "ts-node-dev --respawn --transpile-only --project tsconfig.json src/main.ts",
     "build": "tsc --build",
-    "seed": "ts-node prisma/seed.ts",
+    "start": "node dist/src/main.js",
+    "seed": "node dist/prisma/seed.js",
     "migrate:dev": "pnpm prisma migrate dev --name init",
     "migrate:deploy": "pnpm prisma migrate deploy",
     "generate": "pnpm prisma generate",
-    "start": "node dist/main.js",
     "lint": "eslint . --ext .ts --fix",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down"

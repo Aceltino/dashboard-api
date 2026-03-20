@@ -1,281 +1,91 @@
-# Dashboard API
+# 📊 Dashboard API (Senior Test Case)
 
-API RESTful dinâmica para dashboards, desenvolvida com Node.js, TypeScript, Prisma ORM e MySQL.
+API RESTful dinâmica para dashboards, desenvolvida com **Node.js 20**, **TypeScript 5**, **Prisma ORM** e **MySQL 8**.
 
-## 🧩 Visão Geral
+## 🚀 Como Executar (Quick Start)
 
-Este projeto implementa uma API capaz de consultar transações e fornecer respostas adaptáveis para diferentes tipos de gráficos, além de registrar auditoria básica.
+A maneira mais rápida e segura de rodar o projeto é via **Docker**, que já configura o banco de dados e a rede automaticamente.
 
-- Node.js + TypeScript
-- Express como servidor HTTP
-- Prisma ORM com MySQL
-- Modelo de dados em `prisma/schema.prisma`
-- Tratamento centralizado de erros em `src/shared/middlewares/errorMiddleware.ts`
-- Arquitetura modular (infraestrutura, domínio e casos de uso)
-
-## 🗂️ Modelos (prisma/schema.prisma)
-
-### Transaction (transactions)
-- `id: Int` (PK, auto incremental)
-- `category: String`
-- `amount: Decimal(10,2)`
-- `status: String`
-- `createdAt: DateTime` (default now)
-- `updatedAt: DateTime` (auto update)
-- índice: `@@index([createdAt])`
-
-### AuditLog (audit_logs)
-- `id: Int` (PK, auto incremental)
-- `entityId: Int`
-- `action: String`
-- `oldValue: String?` (`Text`)
-- `newValue: String?` (`Text`)
-- `createdAt: DateTime` (default now)
-
-## 🔧 Requisitos
-
-- Node.js >= 20
-- pnpm
-- MySQL
-- Docker (opcional)
-
-## ⚙️ Configuração
-
-Copie `.env.example` (ou crie `.env`):
-
-```dotenv
-DATABASE_URL="mysql://root:root@localhost:3306/dashboard_db"
-PORT=3000
-```
-
-Instale dependências:
-
+### 1. Configuração do Ambiente
 ```bash
-pnpm install
+# Clone o repositório
+git clone <seu-repo-url>
+cd dashboard-api
+
+# Configure as variáveis de ambiente (Já otimizadas para Docker)
+cp .env.example .env
 ```
 
-Execute migrations e gere cliente prisma:
-
+### 2. Subir Containers
 ```bash
-pnpm prisma migrate dev --name init
-pnpm prisma generate
+docker compose up --build -d
 ```
 
-## ▶️ Execução
-
+### 3. Popular o Banco de Dados (Seed)
+**Importante:** Devido à arquitetura Clean e build do TypeScript, o comando de seed deve ser executado apontando para os arquivos compilados:
 ```bash
-pnpm dev
+docker exec -it dashboard_api_app pnpm seed
 ```
-
-Build:
-
-```bash
-pnpm build
-pnpm start
-```
-
-Docker:
-
-```bash
-pnpm docker:up
-pnpm docker:down
-```
-
-## � Endpoints disponíveis
-
-### GET /healthz
-
-- resposta: `200`
-- corpo: `{ "success": true, "message": "OK" }`
-
-### GET /dashboard
-
-Query params:
-- `type` (required): `pie | line | bar`
-- `from` (required): `YYYY-MM-DD`
-- `to` (required): `YYYY-MM-DD`
-
-Exemplo:
-
-```http
-GET /dashboard?type=pie&from=2026-01-01&to=2026-01-31
-```
-
-Formato de resposta 200:
-
-```json
-{
-  "success": true,
-  "message": "Dashboard data fetched successfully",
-  "data": {
-    "type": "pie",
-    "period": {
-      "from": "2026-01-01",
-      "to": "2026-01-31"
-    },
-    "data": [
-      { "label": "Software", "value": 100.0 },
-      { "label": "Hardware", "value": 200.0 }
-    ]
-  }
-}
-```
-
-Erros:
-- 400: validação inválida (`validation_error`)
-- 500: erro interno (`internal_error`)
-
-### GET /api-docs
-
-- URL de interface Swagger UI para documentação interativa.
-
-## 🧪 Testes
-
-Executar:
-
-```bash
-pnpm test
-```
-
-Testes implementados:
-- `src/__tests__/dashboard.controller.spec.ts` (unit)
-- `src/__tests__/dashboard.integration.spec.ts` (integração, DB isolado via mock)
-
-## ✅ Estado atual
-
-- validação com Zod: `src/shared/validators/dashboard.validator.ts`
-- middleware de erro com retorno padronizado: `src/shared/middlewares/errorMiddleware.ts`
-- modelo de resposta padrão: `src/shared/http/ApiResponse.ts`
-- endpoint de saúde de serviço: `GET /healthz`
-- documentaçãoOpenAPI: `GET /api-docs`
-- `AppError` customizado de negócios
-- integração via supertest + mocks
 
 ---
 
-## 📦 Scripts (package.json)
+## 🏗️ Arquitetura e Decisões Técnicas
 
-- `dev`: `ts-node-dev --respawn --transpile-only src/main.ts`
-- `build`: `tsc`
-- `start`: `node dist/main.js`
-- `test`: `vitest run --globals --environment node`
-- `lint`: `eslint . --ext .ts --fix`
-- `docker:up`: `docker-compose up -d`
-- `docker:down`: `docker-compose down`
+O projeto segue os princípios de **Clean Architecture** e **SOLID**:
+- **Domain:** Entidades de negócio e interfaces de repositórios.
+- **Application:** Casos de uso (Use Cases) que contêm a lógica de agregação do dashboard.
+- **Infrastructure:** Implementações de banco de dados (Prisma/MariaDB Adapter), rotas e controllers.
+- **Resiliência:** Implementada lógica de "Auto-Swap" para datas invertidas (se `from > to`).
+- **Linguagem Única:** Todo o código, logs e documentação seguem o padrão **English-only**.
 
-## 📄 Licença
 
-ISC
 
-A API deve oferecer rota dinâmica para relatório de dashboard com filtro de data e tipo de gráfico.
+## 🛠️ Scripts Disponíveis
 
-### GET /dashboard
-
-Query params:
-- `type` (required): `pie | line | bar`
-- `startDate` (required): `YYYY-MM-DD`
-- `endDate` (required): `YYYY-MM-DD`
-
-Exemplo:
-
-```http
-GET /dashboard?type=pie&startDate=2026-01-01&endDate=2026-02-01
-```
-
-Formato sugerido:
-
-- pie: `{ data:[{ label, value }] }`
-- line: `{ data:[{ date, value }] }`
-- bar: `{ data:[{ label, value }] }`
-
-Resposta 200:
-
-```json
-{
-  "type": "pie",
-  "data": [
-    { "label": "Software", "value": 1234.56 },
-    { "label": "Hardware", "value": 789.01 }
-  ]
-}
-```
-
-Erros:
-- 400: validação de query inválida
-- 404: dados não encontrados (opcional)
-- 500: erro interno
-
-## 🧪 Testes (a implementar)
-
-Rodar:
-
-```bash
-pnpm test
-```
-
-Cobertura esperada:
-- unidade: mapeamento e conversão de dados
-- integração: rota `/dashboard` + edge-cases
-
-## ✅ Pronto para entrega GitHub
-
-1. Implementar rota `dashboard` em `src/infrastructure/http/routes` e controller.
-2. Adicionar validação com Zod em `src/shared/validators`.
-3. Montar use-case para filtro de datas + agregação em `src/application/use-cases`.
-4. Escrever testes com `vitest`/`jest` + `supertest`.
-5. Adicionar `npx prisma migrate deploy` no CI.
-6. Atualizar `README` com exemplos e execução.
+| Comando | Descrição |
+| :--- | :--- |
+| `pnpm dev` | Executa em modo desenvolvimento com `ts-node-dev`. |
+| `pnpm build` | Compila o TypeScript para a pasta `/dist`. |
+| `pnpm start` | Inicia o servidor usando os arquivos compilados (`dist/src/main.js`). |
+| `pnpm seed` | Popula o banco com transações de teste (via `dist/prisma/seed.js`). |
+| `pnpm test` | Executa a suíte de testes unitários e integração com **Vitest**. |
 
 ---
 
-## 📦 Scripts (package.json)
+## 📡 Endpoints Principais
 
-- `dev`: `ts-node-dev --respawn --transpile-only src/main.ts`
-- `build`: `tsc`
-- `start`: `node dist/main.js`
-- `lint`: `eslint src/**/*.ts --fix`
-- `docker:up`: `docker-compose up -d`
-- `docker:down`: `docker-compose down`
+### `GET /api/dashboard`
+Retorna dados agregados filtrados por período e tipo de visualização.
 
-## � Deploy e CI/CD
+**Query Parameters:**
+- `type`: `pie` | `line` | `bar`
+- `from`: Data de início (Ex: `2024-01-01`)
+- `to`: Data de fim (Ex: `2026-12-31`)
 
-1. Configure as variáveis de ambiente locais a partir de `.env.example`.
-2. Certifique-se de não subir `.env` ao GitHub (já está em `.gitignore`).
-3. Pipeline configurado em `.github/workflows/ci.yml`:
-   - lint
-   - test
-   - prisma generate
-   - build
-   - (opcional) docker build/push se `DOCKERHUB_USERNAME` e `DOCKERHUB_TOKEN` estiverem definidas
+**Exemplo de Chamada:**
+`GET http://localhost:3000/api/dashboard?type=pie&from=2024-01-01&to=2026-12-31`
 
-### GitHub repository
+### `GET /api-docs`
+Interface **Swagger UI** completa para exploração da API e schemas de dados.
 
+---
+
+## 🧪 Qualidade de Código (Testes)
+
+Os testes foram desenhados para cobrir falhas comuns de lógica e integração:
+- **Unitários:** Validação de formato de datas e cálculo de agregação.
+- **Integração:** Validação do fluxo completo `Request -> Controller -> Use Case -> DB Mock`.
+
+Para rodar os testes dentro do ambiente isolado do Docker:
 ```bash
-# inicializar repositório local (se ainda não estiver)
-git init
-git add .
-git commit -m "chore: inicial commit"
-
-# conectar ao remote GitHub
-git remote add origin git@github.com:<seu-usuario>/dashboard-api.git
-
-# criar a branch principal e subir
-git branch -M main
-git push -u origin main
+docker exec -it dashboard_api_app pnpm test
 ```
 
-### Como criar release sem segredos no código
+---
 
-- Evite hardcode de credenciais no código fonte.
-- use `.env` local ou secrets do GitHub Actions.
-- mantenha `DATABASE_URL` só em runtime (env var), nunca com valor real em código.
+## 📝 Notas de Implementação (Docker)
+- O projeto utiliza **Multi-stage Build** no `Dockerfile` para garantir uma imagem final leve e segura.
+- Foi utilizado o `@prisma/adapter-mariadb` para compatibilidade total com o Driver Nativo dentro de containers Linux Alpine.
+- Os logs da aplicação seguem o formato: `[TIMESTAMP] [FILE:LINE] MESSAGE`.
 
-### Docker em produção
-
-- `docker-compose up -d` roda MySQL + Adminer + API.
-- `docker-compose down` abaixo.
-- `Dockerfile` faz build multi-stage e executa `node dist/main.js`.
-
-## �📄 Licença
-
-ISC
+---

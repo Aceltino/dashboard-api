@@ -19,6 +19,6 @@
     },
     "typeRoots": ["./node_modules/@types", "./src/@types"]
   },
-  "include": ["src/**/*.ts", "swagger.json"],
+  "include": ["src/**/*.ts", "prisma/**/*.ts", "swagger.json"],
   "exclude": ["node_modules", "dist", "src/**/__tests__/**"]
 }
