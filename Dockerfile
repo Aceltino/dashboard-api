@@ -38,4 +38,4 @@ ENV NODE_ENV=production
 EXPOSE 3000
 
 # Use o node direto para evitar overhead de pnpm em prod
-CMD ["node", "dist/src/main.js"]
+CMD sh -c "npx prisma migrate deploy && node dist/src/main.js"
