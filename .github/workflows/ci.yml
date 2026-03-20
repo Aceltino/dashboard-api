@@ -68,8 +68,8 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: ${{ env.DOCKER_USER != '' && env.DOCKER_TOKEN != '' }}
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/dashboard-api:latest
+          push: false
+          tags: dashboard-api:latest 
         env:
           DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
