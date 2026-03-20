@@ -22,26 +22,3 @@ CREATE TABLE `audit_logs` (
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- Procedure
-CREATE PROCEDURE GetChartData(IN startDate DATETIME, IN endDate DATETIME)
-BEGIN
-    SELECT 
-        category AS label, 
-        SUM(amount) AS value,
-        COUNT(*) AS quantity
-    FROM transactions
-    WHERE createdAt BETWEEN startDate AND endDate
-    GROUP BY category;
-END;
-
--- Trigger
-CREATE TRIGGER after_transaction_update
-AFTER UPDATE ON transactions
-FOR EACH ROW
-BEGIN
-    IF OLD.amount <> NEW.amount THEN
-        INSERT INTO audit_logs (entityId, action, oldValue, newValue)
-        VALUES (NEW.id, 'UPDATE_AMOUNT', CAST(OLD.amount AS CHAR), CAST(NEW.amount AS CHAR));
-    END IF;
-END;
