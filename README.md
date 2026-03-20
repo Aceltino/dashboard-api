@@ -1,91 +1,91 @@
 # 📊 Dashboard API (Senior Test Case)
 
-API RESTful dinâmica para dashboards, desenvolvida com **Node.js 20**, **TypeScript 5**, **Prisma ORM** e **MySQL 8**.
+A dynamic RESTful dashboard API built with Node.js 20, TypeScript 5, Prisma ORM, and MySQL 8.
 
-## 🚀 Como Executar (Quick Start)
+## 🚀 Quick Start
 
-A maneira mais rápida e segura de rodar o projeto é via **Docker**, que já configura o banco de dados e a rede automaticamente.
+The fastest way to run the project is via Docker (includes DB setup and networking).
 
-### 1. Configuração do Ambiente
+### 1. Environment setup
 ```bash
-# Clone o repositório
-git clone <seu-repo-url>
+# Clone repo
+git clone <git@github.com:Aceltino/dashboard-api.git>
 cd dashboard-api
 
-# Configure as variáveis de ambiente (Já otimizadas para Docker)
+# Copy example environment
+touch .env
 cp .env.example .env
 ```
 
-### 2. Subir Containers
+### 2. Start containers
 ```bash
 docker compose up --build -d
 ```
 
-### 3. Popular o Banco de Dados (Seed)
-**Importante:** Devido à arquitetura Clean e build do TypeScript, o comando de seed deve ser executado apontando para os arquivos compilados:
+### 3. Seed database
 ```bash
 docker exec -it dashboard_api_app pnpm seed
 ```
 
 ---
 
-## 🏗️ Arquitetura e Decisões Técnicas
+## 🏗️ Architecture and Design
 
-O projeto segue os princípios de **Clean Architecture** e **SOLID**:
-- **Domain:** Entidades de negócio e interfaces de repositórios.
-- **Application:** Casos de uso (Use Cases) que contêm a lógica de agregação do dashboard.
-- **Infrastructure:** Implementações de banco de dados (Prisma/MariaDB Adapter), rotas e controllers.
-- **Resiliência:** Implementada lógica de "Auto-Swap" para datas invertidas (se `from > to`).
-- **Linguagem Única:** Todo o código, logs e documentação seguem o padrão **English-only**.
+The project follows Clean Architecture and SOLID principles:
+- **Domain:** business entities and repository interfaces.
+- **Application:** use cases containing dashboard aggregation logic.
+- **Infrastructure:** database adapter (Prisma), routes & controllers.
+- **Resilience:** auto-swap for date range (if `from > to`).
+- **Single language:** code, logs, and docs in English.
 
+## 🛠️ Available Scripts
 
-
-## 🛠️ Scripts Disponíveis
-
-| Comando | Descrição |
+| Command | Description |
 | :--- | :--- |
-| `pnpm dev` | Executa em modo desenvolvimento com `ts-node-dev`. |
-| `pnpm build` | Compila o TypeScript para a pasta `/dist`. |
-| `pnpm start` | Inicia o servidor usando os arquivos compilados (`dist/src/main.js`). |
-| `pnpm seed` | Popula o banco com transações de teste (via `dist/prisma/seed.js`). |
-| `pnpm test` | Executa a suíte de testes unitários e integração com **Vitest**. |
+| `pnpm dev` | Start in dev mode with `ts-node-dev`. |
+| `pnpm build` | Compile TypeScript to `/dist`. |
+| `pnpm start` | Run compiled app (`dist/src/main.js`). |
+| `pnpm seed` | Populate DB (`dist/prisma/seed.js`). |
+| `pnpm test` | Run tests with Vitest. |
+| `pnpm lint` | Run ESLint and auto-fix. |
 
 ---
 
-## 📡 Endpoints Principais
+## 📡 Endpoints
 
-### `GET /api/dashboard`
-Retorna dados agregados filtrados por período e tipo de visualização.
+### GET /dashboard
+Return aggregated transactions for UI graphs.
 
-**Query Parameters:**
-- `type`: `pie` | `line` | `bar`
-- `from`: Data de início (Ex: `2024-01-01`)
-- `to`: Data de fim (Ex: `2026-12-31`)
+Query parameters:
+- `type`: `pie` | `line` | `bar` (required)
+- `from`: `YYYY-MM-DD` (optional; default = 30 days ago)
+- `to`: `YYYY-MM-DD` (optional; default = today)
 
-**Exemplo de Chamada:**
-`GET http://localhost:3000/api/dashboard?type=pie&from=2024-01-01&to=2026-12-31`
+### GET /healthz
+Health check.
 
-### `GET /api-docs`
-Interface **Swagger UI** completa para exploração da API e schemas de dados.
-
----
-
-## 🧪 Qualidade de Código (Testes)
-
-Os testes foram desenhados para cobrir falhas comuns de lógica e integração:
-- **Unitários:** Validação de formato de datas e cálculo de agregação.
-- **Integração:** Validação do fluxo completo `Request -> Controller -> Use Case -> DB Mock`.
-
-Para rodar os testes dentro do ambiente isolado do Docker:
-```bash
-docker exec -it dashboard_api_app pnpm test
-```
+### GET /api-docs
+Swagger UI docs.
 
 ---
 
-## 📝 Notas de Implementação (Docker)
-- O projeto utiliza **Multi-stage Build** no `Dockerfile` para garantir uma imagem final leve e segura.
-- Foi utilizado o `@prisma/adapter-mariadb` para compatibilidade total com o Driver Nativo dentro de containers Linux Alpine.
-- Os logs da aplicação seguem o formato: `[TIMESTAMP] [FILE:LINE] MESSAGE`.
+## 🧩 Data model
+
+Prisma model in `prisma/schema.prisma`:
+- `Transaction` (id, category, amount, status, createdAt, updatedAt)
 
 ---
+
+## 🧪 Testing
+
+- Controller unit tests in `src/__tests__/dashboard.controller.spec.ts`.
+- Integration tests in `src/__tests__/dashboard.integration.spec.ts`.
+- Uses `supertest` + `Vitest`.
+
+---
+
+## ✅ Notes
+
+- No DB triggers/procedures are implemented.
+- Core logic is inside use case and business rules (controller orchestrates + validation).
+- Error handling via custom `AppError` and `errorMiddleware`.

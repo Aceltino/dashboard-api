@@ -8,7 +8,7 @@
     "test:watch": "vitest --globals --environment node",
     "dev": "ts-node-dev --respawn --transpile-only --project tsconfig.json src/main.ts",
     "build": "tsc --build",
-    "start": "prisma migrate deploy && node dist/src/index.js",
+    "start": "prisma migrate deploy && node dist/src/main.js",
     "seed": "node dist/prisma/seed.js",
     "migrate:dev": "pnpm prisma migrate dev --name init",
     "migrate:deploy": "pnpm prisma migrate deploy",
