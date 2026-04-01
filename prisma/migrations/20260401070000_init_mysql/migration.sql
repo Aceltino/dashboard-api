@@ -22,20 +22,7 @@ CREATE TABLE `transactions_audit` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- TRIGGER 
-DROP TRIGGER IF EXISTS after_transaction_insert;
-CREATE TRIGGER after_transaction_insert
-AFTER INSERT ON transactions
-FOR EACH ROW
-BEGIN
-    INSERT INTO transactions_audit (transactionId, action, newAmount, createdAt)
-    VALUES (NEW.id, 'INSERT', NEW.amount, NOW());
-END;
+-- Triggers are not supported in the main deployment target and were removed.
 
 -- STORED PROCEDURE
-DROP PROCEDURE IF EXISTS CalculateCategoryTotal;
-CREATE PROCEDURE CalculateCategoryTotal(IN p_category VARCHAR(255), OUT p_total FLOAT)
-BEGIN
-    SELECT IFNULL(SUM(amount), 0) INTO p_total
-    FROM transactions
-    WHERE category COLLATE utf8mb4_unicode_ci = p_category COLLATE utf8mb4_unicode_ci;
-END;
+-- Stored procedures are not supported in the main deployment target and were removed.

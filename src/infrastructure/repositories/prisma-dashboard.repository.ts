@@ -65,14 +65,9 @@ export class PrismaDashboardRepository implements DashboardRepository {
       `getCategoryTotal called with category=${category}`,
     );
 
-    await prisma.$executeRawUnsafe(`SET @total = 0`);
-    await prisma.$executeRawUnsafe(
-      `CALL CalculateCategoryTotal(?, @total)`,
-      category,
-    );
-
     const rows = await prisma.$queryRawUnsafe<Array<{ total: number | null }>>(
-      `SELECT @total AS total`,
+      `SELECT IFNULL(SUM(amount), 0) AS total FROM transactions WHERE category = ?`,
+      category,
     );
 
     const result = Array.isArray(rows) ? rows[0] : rows;
