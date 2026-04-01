@@ -1,91 +1,134 @@
 # 📊 Dashboard API (Senior Test Case)
 
-A dynamic RESTful dashboard API built with Node.js 20, TypeScript 5, Prisma ORM, and MySQL 8.
+API RESTful para dashboard construída com Node.js 20, TypeScript 5, Prisma ORM e MySQL 8.
 
-## 🚀 Quick Start
+## 🚀 Inicialização
 
-The fastest way to run the project is via Docker (includes DB setup and networking).
-
-### 1. Environment setup
+### 1. Clonar o repositório
 ```bash
-# Clone repo
-git clone <git@github.com:Aceltino/dashboard-api.git>
+git clone git@github.com:Aceltino/dashboard-api.git
 cd dashboard-api
-
-# Copy example environment
-touch .env
-cp .env.example .env
 ```
 
-### 2. Start containers
+### 2. Instalar dependências
+```bash
+pnpm install
+```
+
+### 3. Escolher branch
+
+Branches principais disponíveis:
+- `main`: branch estável e principal.
+- `feature/triggers-procedures`: branch de desenvolvimento com atualizações em triggers/procedures e ajustes de banco.
+
+Use:
+```bash
+git checkout main
+# ou
+git checkout feature/triggers-procedures
+```
+
+Se a branch não existir localmente:
+```bash
+git fetch origin
+git checkout -b feature/triggers-procedures origin/feature/triggers-procedures
+```
+
+### 4. Configurar variáveis de ambiente
+```bash
+cp .env.example .env
+```
+Edite `.env` para apontar seu banco de dados MySQL:
+- `DATABASE_URL` = `mysql://user:password@host:port/database`
+- `PORT` = `3000`
+- `NODE_ENV` = `development`
+
+### 5. Gerar Prisma e migrar
+```bash
+pnpm prisma generate
+pnpm prisma migrate deploy
+```
+
+### 6. Executar com Docker
 ```bash
 docker compose up --build -d
 ```
 
-### 3. Seed database
+### 7. Popular o banco de dados
 ```bash
 docker exec -it dashboard_api_app pnpm seed
 ```
 
+> Alternativa local sem Docker:
+> ```bash
+> pnpm dev
+> ```
+
 ---
 
-## 🏗️ Architecture and Design
+## 🏗️ Arquitetura
 
-The project follows Clean Architecture and SOLID principles:
-- **Domain:** business entities and repository interfaces.
-- **Application:** use cases containing dashboard aggregation logic.
-- **Infrastructure:** database adapter (Prisma), routes & controllers.
-- **Resilience:** auto-swap for date range (if `from > to`).
-- **Single language:** code, logs, and docs in English.
+Seguindo Clean Architecture e princípios SOLID:
+- **Domain:** entidades de negócio e interfaces de repositório.
+- **Application:** casos de uso para lógica de dashboard.
+- **Infrastructure:** adaptação Prisma, rotas e controladores.
+- **Shared:** validação, erros e middleware.
 
-## 🛠️ Available Scripts
+---
 
-| Command | Description |
+## 🛠️ Scripts disponíveis
+
+| Comando | Descrição |
 | :--- | :--- |
-| `pnpm dev` | Start in dev mode with `ts-node-dev`. |
-| `pnpm build` | Compile TypeScript to `/dist`. |
-| `pnpm start` | Run compiled app (`dist/src/main.js`). |
-| `pnpm seed` | Populate DB (`dist/prisma/seed.js`). |
-| `pnpm test` | Run tests with Vitest. |
-| `pnpm lint` | Run ESLint and auto-fix. |
+| `pnpm dev` | Inicia em modo de desenvolvimento com `ts-node-dev`. |
+| `pnpm build` | Compila TypeScript para `dist`. |
+| `pnpm start` | Executa a aplicação compilada (`dist/src/main.js`). |
+| `pnpm seed` | Insere dados iniciais no banco (`dist/prisma/seed.js`). |
+| `pnpm test` | Executa os testes com Vitest. |
+| `pnpm lint` | Executa ESLint e corrige automaticamente. |
+| `pnpm migrate:dev` | Cria uma migração de desenvolvimento. |
+| `pnpm migrate:deploy` | Aplica migrações em produção. |
+| `pnpm generate` | Gera o cliente Prisma. |
+| `pnpm docker:up` | Sobe a stack Docker. |
+| `pnpm docker:down` | Para a stack Docker. |
 
 ---
 
 ## 📡 Endpoints
 
 ### GET /dashboard
-Return aggregated transactions for UI graphs.
+Retorna dados agregados de transações para gráficos.
 
 Query parameters:
-- `type`: `pie` | `line` | `bar` (required)
-- `from`: `YYYY-MM-DD` (optional; default = 30 days ago)
-- `to`: `YYYY-MM-DD` (optional; default = today)
+- `type`: `pie` | `line` | `bar` (obrigatório)
+- `from`: `YYYY-MM-DD` (opcional; padrão = 30 dias atrás)
+- `to`: `YYYY-MM-DD` (opcional; padrão = hoje)
 
 ### GET /healthz
-Health check.
+Verifica se o serviço está saudável.
 
 ### GET /api-docs
-Swagger UI docs.
+Swagger UI com documentação da API.
 
 ---
 
-## 🧩 Data model
+## 🧩 Modelo de dados
 
-Prisma model in `prisma/schema.prisma`:
+Modelo Prisma em `prisma/schema.prisma`:
 - `Transaction` (id, category, amount, status, createdAt, updatedAt)
 
 ---
 
-## 🧪 Testing
+## 🧪 Testes
 
-- Controller unit tests in `src/__tests__/dashboard.controller.spec.ts`.
-- Integration tests in `src/__tests__/dashboard.integration.spec.ts`.
-- Uses `supertest` + `Vitest`.
+- Testes unitários de controlador em `src/__tests__/dashboard.controller.spec.ts`.
+- Testes de integração em `src/__tests__/dashboard.integration.spec.ts`.
+- Usa `supertest` + `Vitest`.
 
 ---
 
-## ✅ Notes
+## ✅ Observações
 
-- No DB triggers/procedures are implemented.
-- Core logic is inside use case and business rules (controller orchestrates + validation).
-- Error handling via custom `AppError` and `errorMiddleware`.
+- O tratamento de erros usa `AppError` e `errorMiddleware`.
+- A lógica principal está nos use cases e regras de negócio.
+- A configuração de banco pode ser feita localmente ou via Docker.
