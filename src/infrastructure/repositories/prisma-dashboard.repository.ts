@@ -58,4 +58,26 @@ export class PrismaDashboardRepository implements DashboardRepository {
       updatedAt: row.updatedAt,
     };
   }
+
+  async getCategoryTotal(category: string): Promise<number> {
+    logMessage(
+      "src/infrastructure/repositories/prisma-dashboard.repository.ts",
+      `getCategoryTotal called with category=${category}`,
+    );
+
+    await prisma.$executeRawUnsafe(`SET @total = 0`);
+    await prisma.$executeRawUnsafe(
+      `CALL CalculateCategoryTotal(?, @total)`,
+      category,
+    );
+
+    const rows = await prisma.$queryRawUnsafe<Array<{ total: number | null }>>(
+      `SELECT @total AS total`,
+    );
+
+    const result = Array.isArray(rows) ? rows[0] : rows;
+    const total = result?.total;
+
+    return total !== null && total !== undefined ? Number(total) : 0;
+  }
 }

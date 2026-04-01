@@ -28,7 +28,7 @@ export const dashboardParamsSchema = z
       ctx.addIssue({
         path: ["from"],
         code: z.ZodIssueCode.custom,
-        message: "from must be a valid ISO-8601 date (YYYY-MM-DD)",
+        message: "format date (YYYY-MM-DD)",
       });
     }
 
@@ -36,9 +36,13 @@ export const dashboardParamsSchema = z
       ctx.addIssue({
         path: ["to"],
         code: z.ZodIssueCode.custom,
-        message: "to must be a valid ISO-8601 date (YYYY-MM-DD)",
+        message: "format date (YYYY-MM-DD)",
       });
     }
   });
+
+export const categoryParamSchema = z.object({
+  category: z.string().trim().min(1, "category is required"),
+});
 
 export type DashboardParams = z.infer<typeof dashboardParamsSchema>;

@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from "vitest";
 import { DashboardController } from "../infrastructure/http/controllers/dashboard.controller";
 import { Request, Response } from "express";
 
-// Mock corrigido para ser um construtor (classe)
 vi.mock("../application/use-cases/get-dashboard-data.use-case", () => {
   return {
     GetDashboardDataUseCase: class {
@@ -12,9 +11,9 @@ vi.mock("../application/use-cases/get-dashboard-data.use-case", () => {
           { label: "Software", value: 1500.5 },
           { label: "Hardware", value: 300.0 },
         ],
-        period: { from: "2026-01-01", to: "2026-01-31" }
+        period: { from: "2026-01-01", to: "2026-01-31" },
       });
-    }
+    },
   };
 });
 

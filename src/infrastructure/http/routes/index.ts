@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { DashboardController } from "../controllers/dashboard.controller";
 import { TransactionController } from "../controllers/transaction.controller";
+import { CategoryTotalController } from "../controllers/category-total.controller";
 
 const router = Router();
 const dashboardController = new DashboardController();
 const transactionController = new TransactionController();
+const categoryTotalController = new CategoryTotalController();
 
 /**
  * @openapi
@@ -74,6 +76,42 @@ router.get("/healthz", (req, res) => {
  *       500:
  *         description: Internal server error
  */
+/**
+ * @openapi
+ * /dashboard/category-total/{category}:
+ *   get:
+ *     summary: Get the total amount for a category
+ *     parameters:
+ *       - in: path
+ *         name: category
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Category name to totalize
+ *     responses:
+ *       200:
+ *         description: Category total returned
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     category:
+ *                       type: string
+ *                     totalAmount:
+ *                       type: number
+ *       400:
+ *         description: Validation error
+ *       500:
+ *         description: Internal server error
+ */
 type ExpressRequest = import("express").Request;
 type ExpressResponse = import("express").Response;
 type ExpressNext = import("express").NextFunction;
@@ -93,6 +131,11 @@ const asyncHandler = (
 router.get(
   "/dashboard",
   asyncHandler((req, res) => dashboardController.handle(req, res)),
+);
+
+router.get(
+  "/dashboard/category-total/:category",
+  asyncHandler((req, res) => categoryTotalController.handle(req, res)),
 );
 
 router.post(

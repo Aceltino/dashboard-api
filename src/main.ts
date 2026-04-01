@@ -6,7 +6,6 @@ const PORT = process.env.PORT || 3333;
 
 async function bootstrap() {
   try {
-    // Testa a conexão com o banco
     await prisma.$connect();
     console.log("🐘 Database connected successfully");
 

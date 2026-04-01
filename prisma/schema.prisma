@@ -15,6 +15,17 @@ model Transaction {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@index([createdAt]) // Essential for date filtering performance
+  @@index([createdAt]) 
   @@map("transactions")
+}
+
+model TransactionAudit {
+  id            Int      @id @default(autoincrement())
+  transactionId String   
+  action        String   
+  oldAmount     Float?
+  newAmount     Float?
+  createdAt     DateTime @default(now())
+
+  @@map("transactions_audit")
 }

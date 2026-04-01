@@ -11,4 +11,5 @@ export interface CreateTransactionInput {
 export interface DashboardRepository {
   findTransactions(start: Date, end: Date): Promise<TransactionEntity[]>;
   createTransaction(data: CreateTransactionInput): Promise<TransactionEntity>;
+  getCategoryTotal(category: string): Promise<number>;
 }

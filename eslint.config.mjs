@@ -16,7 +16,7 @@ export default [
   {
     ignores: ["dist/**", "node_modules/**", "coverage/**", "eslint.config.js"]
   },
-  
+
   // 2. Extensões recomendadas
   ...compat.extends(
     "eslint:recommended",
