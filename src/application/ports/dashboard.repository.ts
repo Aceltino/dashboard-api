@@ -1,12 +1,14 @@
-export interface TransactionEntity {
-  id: number;
+import { TransactionEntity } from "../../core/entities/transaction.entity";
+
+export type { TransactionEntity };
+
+export interface CreateTransactionInput {
   category: string;
   amount: number;
   status: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface DashboardRepository {
   findTransactions(start: Date, end: Date): Promise<TransactionEntity[]>;
+  createTransaction(data: CreateTransactionInput): Promise<TransactionEntity>;
 }

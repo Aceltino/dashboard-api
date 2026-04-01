@@ -1,8 +1,10 @@
 import { Router } from "express";
 import { DashboardController } from "../controllers/dashboard.controller";
+import { TransactionController } from "../controllers/transaction.controller";
 
 const router = Router();
 const dashboardController = new DashboardController();
+const transactionController = new TransactionController();
 
 /**
  * @openapi
@@ -91,6 +93,11 @@ const asyncHandler = (
 router.get(
   "/dashboard",
   asyncHandler((req, res) => dashboardController.handle(req, res)),
+);
+
+router.post(
+  "/transactions",
+  asyncHandler((req, res) => transactionController.handle(req, res)),
 );
 
 export default router;
